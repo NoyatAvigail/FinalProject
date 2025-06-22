@@ -30,13 +30,12 @@ function ContactPatientProfile() {
         if (Array.isArray(dataArray) && dataArray.length > 0) {
             const profile = dataArray[0];
             setProfileData(profile);
-            reset(profile);
+            reset(profile); // איתחול שדות הטופס
             const defaultPatient = normalizePatientData(dataArray[0]);
             setProfileData(defaultPatient);
             reset(defaultPatient);
         }
     }, [dataArray, reset]);
-
     const normalizePatientData = (patient) => {
         const hosp = patient.Hospitalizeds?.[0];
         return {
@@ -72,80 +71,98 @@ function ContactPatientProfile() {
     const onVerifyCode = async () => {
         await handleVerifyCode(code, setIsEditing, setShowCodeInput, currentUser);
     };
-
     if (!profileData || loading) return <div>Loading...</div>;
 
     return (
-        <div className="entryContainer">
-            <form onSubmit={handleSubmit(onSubmit)} className="entryForm">
-                <h2>Patient Profile</h2>
-                {!isEditing && (
-                    <button type="button" onClick={handleRequestEdit}>Patient Edit</button>
-                )}
-                {!isEditing && showCodeInput && (
-                    <div>
-                        <input
-                            className="entryForm-input"
-                            placeholder="Enter verification code from email"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                        />
-                        <button type="button" onClick={onVerifyCode}>Verify</button>
-                    </div>
-                )}
-                {dataArray.length > 1 && (
-                    <div>
-                        <label>Choose Patient:</label>
-                        <select
-                            value={profileData.id}
-                            onChange={(e) => {
-                                const selectedRaw = dataArray.find(p => p.id === parseInt(e.target.value));
-                                const selected = normalizePatientData(selectedRaw);
-                                setProfileData(selected);
-                                reset(selected);
-                            }}
-                            disabled={isEditing}
-                        >
-                            {dataArray.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                    {p.fullName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+        <div>
+            <h2>Patient Profile</h2>
+            {!isEditing && <button onClick={handleRequestEdit}>Patient Edit</button>}
+
+            {!isEditing && showCodeInput && (
+                <div>
+                    <input
+                        placeholder="Enter verification code from email"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                    />
+                    <button onClick={onVerifyCode}>Verify</button>
+                </div>
+            )}
+
+            {dataArray.length > 1 && (
+                <div>
+                    <label>בחר פציינט:</label>
+                    <select
+                        value={profileData.id}
+                        onChange={(e) => {
+                            const selectedRaw = dataArray.find(p => p.id === parseInt(e.target.value));
+                            const selected = normalizePatientData(selectedRaw);
+                            setProfileData(selected);
+                            reset(selected);
+                        }}
+                        disabled={isEditing}
+                    >
+                        {dataArray.map((p) => (
+                            <option key={p.id} value={p.id}>
+                                {p.fullName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <input
                     placeholder="Full Name"
                     {...register("fullName", { required: true })}
                     readOnly={!isEditing}
                 />
-                {errors.fullName && <p className="error">Required</p>}
+                {errors.fullName && <p>Required</p>}
+
                 <input
                     type="date"
                     placeholder="Birth Date"
                     {...register("dateOfBirth", { required: true })}
                     readOnly={!isEditing}
                 />
-                {errors.dateOfBirth && <p className="error">Required</p>}
+                {errors.dateOfBirth && <p>Required</p>}
+
                 <input
                     placeholder="Address"
                     {...register("address", { required: true })}
                     readOnly={!isEditing}
                 />
-                {errors.address && <p className="error">Required</p>}
+                {errors.address && <p>Required</p>}
+
                 <select {...register("gender", { required: true })} disabled={!isEditing}>
                     <option value="">Select Gender</option>
                     {codes?.Genders?.map((g) => (
                         <option key={g.id} value={g.id}>{g.description}</option>
                     ))}
                 </select>
+
                 <select {...register("sector", { required: true })} disabled={!isEditing}>
                     <option value="">Select Sector</option>
                     {codes?.Sectors?.map((s) => (
                         <option key={s.id} value={s.id}>{s.description}</option>
                     ))}
                 </select>
-                {isEditing && <button type="submit">Update</button>}
+                    { isEditing && <button type="submit">Update</button>}
+
+                {/* {/* <select {...register("departmentId", { required: true })} disabled={!isEditing}>
+                    <option value="">Select Department</option>
+                    {codes?.Departments?.map((d) => (
+                        <option key={d.id} value={d.id}>{d.description}</option>
+                                    <option key={d.id} value={d.id}>{d.description}</option>Add commentMore actions
+                    ))}
+                </select>
+
+                <select {...register("hospitalId", { required: true })} disabled={!isEditing}>
+                    <option value="">Select Hospital</option>
+                    {codes?.Hospitals?.map((h) => (
+                        <option key={h.id} value={h.id}>{h.description}</option>
+                    ))}
+                </select>*/}
             </form>
         </div>
     );

@@ -100,7 +100,7 @@ function App() {
 
   const [currentUser, setCurrentUser] = useState(initialCurrentUser);
   const [isShowInfo, setIsShowInfo] = useState(0);
-
+  
   return (
     <CodesProvider>
       <CurrentUser.Provider value={{ currentUser, setCurrentUser }}>
